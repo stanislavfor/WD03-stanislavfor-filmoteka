@@ -10,17 +10,7 @@ if ( mysqli_connect_error() ) {
 
 $errors = array();
 
-
-if ( @$_GET['action'] == 'delete') {
-  $query = "DELETE FROM films WHERE id = ' " . mysqli_real_escape_string($link, $_GET['id'] ) . "' LIMIT 1";
-  mysqli_query($link, $query);
-  if ( mysqli_affected_rows($link) > 0 ) {
-    $resultInfo = "<p>Фильм успешно удален из фильмотеки.</p>";
-   } 
-}
-
-
-if (array_key_exists('add-film', $_POST)) {
+if (array_key_exists('update-film', $_POST)) {
 
   if ( $_POST['title'] == '') {
     $errors[] = "<p>Необходимо ввести название фильма.</p>";
@@ -33,28 +23,33 @@ if (array_key_exists('add-film', $_POST)) {
   }
 
   if ( empty($errors) ) {
-  $query = "INSERT INTO films (title, genre, year) VALUES (
-  '". mysqli_real_escape_string($link, $_POST['title']) ."', 
-  '". mysqli_real_escape_string($link, $_POST['genre']) ."', 
-  '". mysqli_real_escape_string($link, $_POST['year']) ."'
-  )";
+  $query = "UPDATE films 
+            SET title = '". mysqli_real_escape_string($link, $_POST['title']) ."', 
+                genre = '". mysqli_real_escape_string($link, $_POST['genre']) ."', 
+                year = '". mysqli_real_escape_string($link, $_POST['year']) ."'
+                WHERE id = '" . mysqli_real_escape_string($link, $_GET['id'] ) . "' LIMIT 1";
 
   if ( mysqli_query($link, $query) ) {
-  $successResult = "<p>Фильм добавлен в фильмотеку успешно!</p>";
+  $successResult = "<p>Фильм редактирован успешно!</p>";
   } else { 
-  $errorResult = "<p>Запись не была добавлена. Добавьте фильм еще раз.</p>";
+  $errorResult = "<p>Запись не была редактирована. Добавьте фильм еще раз.</p>";
   }
   }
 }
 
-$query = "SELECT * FROM films";
-$films = array();
+$query = "SELECT * FROM films WHERE id = '" . mysqli_real_escape_string($link, $_GET['id'] ) . "' LIMIT 1";
 $result = mysqli_query($link, $query);
-
 if ( $result = mysqli_query($link, $query) ) {
-  while ( $row = mysqli_fetch_array($result) ) {
-    $films[] = $row;
-  }
+    $film = mysqli_fetch_array($result);
+}
+
+if ( @$_GET['action'] == 'delete') {
+  $query = "DELETE FROM films WHERE id = '" . mysqli_real_escape_string($link, $_GET['id'] ) . "' LIMIT 1";
+ $result = mysqli_query($link, $query);
+
+  if ( mysqli_affected_rows($link) > 0 ) {
+    $resultInfo = "<p>Фильм успешно удален из фильмотеки.</p>";
+   } 
 }
 
 //echo "<pre>";
@@ -67,7 +62,7 @@ if ( $result = mysqli_query($link, $query) ) {
 <html lang="ru">
   <head>
     <meta charset="UTF-8"/>
-    <title>Фильмотека-Список</title>
+    <title>Фильмотека-Редактировать</title>
     <!--[if IE]>
       <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
     <![endif]-->
@@ -98,29 +93,13 @@ if ( $result = mysqli_query($link, $query) ) {
     <div class="error"><?=$errorResult?></div>
     <?php } ?>
 
-    <h1 class="title-1"> Фильмотека</h1>
+    <h1 class="title-1">Фильм <?=$film['title']?></h1>
 
-    <?php
-     foreach ($films as $key => $film) { ?>
-      <div class="card mb-20">
-      <div class="card__header"> 
-      <h4 class="title-4"><?=$film['title']?></h4>
-      <div class="buttons">
-      <a href="edit.php?id=<?=$films[$key]['id']?>" class="button button--edit">Редактировать</a>
-      <a href="?action=delete&id=<?=$film['id']?>" class="button button--delete">Удалить фильм</a>
-      </div>
-      </div> 
-      <div class="badge"><?=$film['genre']?></div>
-      <div class="badge"><?=$film['year']?></div>        
-      </div>
-    <?php } ?>
+    
       
-      <div class="panel-holder mt-80 mb-40">
-      <div class="title-4 mt-0">Добавить фильм</div>
-
-        <form action="index.php" method="POST">
-
-          <!--<div class="error">Название фильма не может быть пустым.</div>-->
+      <div class="panel-holder mt-0 mb-20">
+      <div class="title-4 mt-0">Редактировать фильм</div>
+        <form action="edit.php?id=<?=$film['id']?>" method="POST">          
 
           <?php 
           if ( !empty($errors)) {
@@ -131,20 +110,30 @@ if ( $result = mysqli_query($link, $query) ) {
           ?>
 
           <label class="label-title">Название фильма</label>
-          <input class="input" type="text" placeholder="Такси 2" name="title"/>
+          <!--<input class="input" type="text"  
+                placeholder="Такси 2" name="title" 
+                value="<?=$film['title']?>" />-->
+          <textarea class="mb-20 pl-20 pt-10" cols="62" rows="7" value="<?=$film['title']?>" name="title"><?=$film['title']?></textarea>
           <div class="row">
             <div class="col">
               <label class="label-title">Жанр</label>
-              <input class="input" type="text" placeholder="комедия" name="genre"/>
-            </div>  
+              <input class="input" type="text" 
+                    placeholder="комедия" name="genre" 
+                    value="<?=$film['genre']?>" />
+            </div>
             <div class="col">
               <label class="label-title">Год</label>
-              <input class="input" type="text" placeholder="2000" name="year"/>
-            </div>  
-          </div>                  
-          <input type="submit" class="button" value="Добавить" name="add-film">            
-        </form>
+              <input class="input" type="text" 
+                    placeholder="2000" name="year" 
+                    value="<?=$film['year']?>" />
+            </div>
+          </div>
+          <input type="submit" class="button" value="Сохранить редактирование" name="update-film">
+        </form>              
       </div>
+      <div class="mb-100">  
+       <a href="index.php" class="button returns">Вернуться в Фильмотеку</a>
+      </div>     
     </div><!-- build:jsLibs js/libs.js -->
     <script src="libs/jquery/jquery.min.js"></script><!-- endbuild -->
 <!-- build:jsVendor js/vendor.js -->
