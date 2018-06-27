@@ -1,5 +1,4 @@
 * {
-* {
   -webkit-box-sizing: border-box;
   box-sizing: border-box;
 }
@@ -19,13 +18,15 @@ body::before {
   height: 1px;
   background-color: transparent;
 }
+
 input,
 textarea {
   font-family: 'Open Sans', sans-serif;
   font-size: 16px;
-  line-height: 1.5;
+  line-height: 1.5;  
   resize: vertical;
 }
+
 h1,
 h2,
 h3,
@@ -208,7 +209,7 @@ pre code {
   -o-transition: all 0.2s ease-in;
   transition: all 0.2s ease-in;
   display: inline-block;
-  line-height: 1;
+  line-height: 2.5;
   outline: none;
   border-width: 2px;
   border-color: #dde8ee;
@@ -738,7 +739,7 @@ a.button--login:active {
   transition: -webkit-box-shadow 0.2s ease-in;
   transition: box-shadow 0.2s ease-in;
   transition: box-shadow 0.2s ease-in, -webkit-box-shadow 0.2s ease-in;
-  height: 200px;
+  height: 100px;
   resize: vertical;
 }
 .textarea:active,
@@ -2076,6 +2077,7 @@ a.title,
 .card__header>* {
   margin-top: 0px;
 } 
+
 
 
 
