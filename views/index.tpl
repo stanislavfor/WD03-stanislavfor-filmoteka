@@ -1,7 +1,6 @@
 <h1 class="title-1">Наша фильмотека &#10032; &#10032; &#10032;</h1>
 <?php foreach ($films as $key => $film) { ?>
-      <div class="card mb-20">
-            
+      <div class="card mb-20">            
             <div class="row">
                   <?php if ( $film['photo'] != '') { ?>
                         <!-- col-4 -->
@@ -14,8 +13,16 @@
                         <div class="card__header">
                               <h4 class="title-4"><?=$film['title']?></h4>
                               <div class="buttons">
-                              <a href="edit.php?id=<?=$film['id']?>" class="button button--edit">Редактировать</a>
-                              <a href="?action=delete&id=<?=$film['id']?>" class="button button--delete">Удалить</a>
+                  <?php
+                  if ( isset($_SESSION['user'])) {
+                  if ( $_SESSION['user'] == 'admin') { ?>
+                  <a href="edit.php?id=<?=$film['id']?>" class="button button--edit">Редактировать</a>
+                  <a href="?action=delete&id=<?=$film['id']?>" class="button button--delete">Удалить</a>
+                  <?php  
+                  }
+                  }
+                  ?>      
+                              
                               </div>
                         </div>
                         <div class="badge"><?=$film['genre']?></div>
